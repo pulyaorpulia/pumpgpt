@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PumpGram AI</title>
+    <title>PumpGPT AI</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -20,129 +20,294 @@
         .header {
             width: 100%;
             max-width: 700px;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #1e1e2e;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #1a1a2e;
+            background: #0d0d18;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #7b2ff7, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #7b2ff7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            position: relative;
         }
 
-        .subtitle { color: #666; font-size: 13px; margin-top: 4px; }
+        .avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 1px;
+            right: 1px;
+            width: 9px;
+            height: 9px;
+            background: #00e676;
+            border-radius: 50%;
+            border: 2px solid #0d0d18;
+        }
+
+        .header-info .logo {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e8e8ff;
+        }
+
+        .header-info .subtitle {
+            font-size: 11px;
+            color: #4a4a7a;
+            margin-top: 1px;
+        }
+
+        .status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #00e676;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #00e676;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
 
         .chat-box {
             width: 100%;
             max-width: 700px;
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #1a1a2e transparent;
         }
 
         .message {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 14px;
+            display: flex;
+            gap: 8px;
+            max-width: 82%;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .msg-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #7b2ff7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .message.user .msg-avatar {
+            background: #5a1fd1;
+        }
+
+        .bubble {
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 13px;
             line-height: 1.6;
         }
 
-        .user {
-            background: linear-gradient(135deg, #7b2ff7, #5a1fd1);
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
+        .message.ai .bubble {
+            background: #111128;
+            border: 1px solid #1e1e3a;
+            border-bottom-left-radius: 4px;
+            color: #e0e0ff;
         }
 
-        .ai {
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
+        .message.user .bubble {
+            background: #7b2ff7;
+            border-bottom-right-radius: 4px;
+            color: #fff;
         }
 
         .ai-name {
-            font-size: 11px;
+            font-size: 10px;
             color: #7b2ff7;
-            margin-bottom: 4px;
-            font-weight: bold;
+            font-weight: 600;
+            margin-bottom: 3px;
+            letter-spacing: 0.3px;
         }
 
         .typing {
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            align-self: flex-start;
-            border-radius: 16px;
-            padding: 12px 16px;
-            color: #666;
-            font-size: 13px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 10px 14px;
+            background: #111128;
+            border: 1px solid #1e1e3a;
+            border-radius: 14px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+        }
+
+        .typing span {
+            width: 6px;
+            height: 6px;
+            background: #7b2ff7;
+            border-radius: 50%;
+            animation: bounce 1.2s infinite;
+            display: inline-block;
+        }
+
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
         }
 
         .input-area {
             width: 100%;
             max-width: 700px;
-            padding: 16px 20px;
+            padding: 12px 16px;
+            border-top: 1px solid #1a1a2e;
+            background: #0d0d18;
+        }
+
+        .quick-btns {
             display: flex;
-            gap: 10px;
-            border-top: 1px solid #1e1e2e;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .quick-btn {
+            background: #111128;
+            border: 1px solid #1e1e3a;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 11px;
+            color: #4a4a7a;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .quick-btn:hover {
+            border-color: #7b2ff7;
+            color: #7b2ff7;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         input {
             flex: 1;
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            color: #fff;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 14px;
+            background: #111128;
+            border: 1px solid #1e1e3a;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #e0e0ff;
             outline: none;
+            transition: border 0.2s;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         input:focus { border-color: #7b2ff7; }
-        input::placeholder { color: #444; }
+        input::placeholder { color: #2a2a4a; }
 
         button {
-            background: linear-gradient(135deg, #7b2ff7, #00d4ff);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #7b2ff7;
             border: none;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
+            color: #fff;
             cursor: pointer;
-            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
             transition: opacity 0.2s;
+            flex-shrink: 0;
         }
 
         button:hover { opacity: 0.85; }
-        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo">⚡ PumpGram AI</div>
-    <div class="subtitle">PumpGram ekotizimining sun'iy intellekti</div>
+    <div class="avatar">⚡</div>
+    <div class="header-info">
+        <div class="logo">PumpGPT AI</div>
+        <div class="subtitle">The artificial intelligence of the PumpGPT ecosystem</div>
+    </div>
+    <div class="status">
+        <div class="status-dot"></div>
+        Online
+    </div>
 </div>
 
 <div class="chat-box" id="chatBox">
     <div class="message ai">
-        <div class="ai-name">PumpGram AI</div>
-        Salom! Men PumpGram AI man 🚀 $PGR tokeni, platforma yoki kripto haqida savollaringiz bormi?
+        <div class="msg-avatar">⚡</div>
+        <div>
+            <div class="ai-name">PUMPGPT AI</div>
+            <div class="bubble">
+                Hello! I'm PumpGPT AI 🚀<br>
+                Do you have any questions about the $PGPT token, the platform, or crypto?
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="input-area">
-    <input type="text" id="userInput" placeholder="Xabar yozing..." />
-    <button id="sendBtn" onclick="sendMessage()">➤</button>
+    <div class="quick-btns">
+        <button class="quick-btn" onclick="quickMsg('$PGPT CA')">💎 $PGPT</button>
+        <button class="quick-btn" onclick="quickMsg('Pump.fun')"><img src="https://pump.fun/favicon.ico" width="14" height="14" style="vertical-align:-2px;"></button>
+        <button class="quick-btn" onclick="quickMsg('X')"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
+    </div>
+    <div class="input-row">
+        <input type="text" id="userInput" placeholder="Write here..." />
+        <button id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
 </div>
 
 <script>
     let history = [];
+
+    function quickMsg(text) {
+        document.getElementById('userInput').value = text;
+        sendMessage();
+    }
 
     async function sendMessage() {
         const input = document.getElementById('userInput');
@@ -151,16 +316,27 @@
         const message = input.value.trim();
         if (!message) return;
 
-        chatBox.innerHTML += `<div class="message user">${message}</div>`;
+        const userDiv = document.createElement('div');
+        userDiv.className = 'message user';
+        userDiv.innerHTML = `
+            <div class="msg-avatar" style="background:#5a1fd1;">U</div>
+            <div><div class="bubble">${message}</div></div>`;
+        chatBox.appendChild(userDiv);
+
         history.push({ role: "user", content: message });
         input.value = '';
         btn.disabled = true;
 
-        const typing = document.createElement('div');
-        typing.className = 'typing';
-        typing.id = 'typing';
-        typing.innerText = 'PumpGram AI yozmoqda...';
-        chatBox.appendChild(typing);
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message ai';
+        typingDiv.id = 'typing';
+        typingDiv.innerHTML = `
+            <div class="msg-avatar">⚡</div>
+            <div>
+                <div class="ai-name">PUMPGPT AI</div>
+                <div class="typing"><span></span><span></span><span></span></div>
+            </div>`;
+        chatBox.appendChild(typingDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
 
         try {
@@ -173,17 +349,29 @@
             const data = await res.json();
             document.getElementById('typing').remove();
 
-            chatBox.innerHTML += `
-                <div class="message ai">
-                    <div class="ai-name">PumpGram AI</div>
-                    ${data.reply}
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'message ai';
+            aiDiv.innerHTML = `
+                <div class="msg-avatar">⚡</div>
+                <div>
+                    <div class="ai-name">PUMPGPT AI</div>
+                    <div class="bubble">${data.reply}</div>
                 </div>`;
+            chatBox.appendChild(aiDiv);
 
             history.push({ role: "assistant", content: data.reply });
 
         } catch (e) {
             document.getElementById('typing').remove();
-            chatBox.innerHTML += `<div class="message ai"><div class="ai-name">PumpGram AI</div>Xatolik yuz berdi 😔</div>`;
+            const errDiv = document.createElement('div');
+            errDiv.className = 'message ai';
+            errDiv.innerHTML = `
+                <div class="msg-avatar">⚡</div>
+                <div>
+                    <div class="ai-name">PUMPGPT AI</div>
+                    <div class="bubble">Error 😔</div>
+                </div>`;
+            chatBox.appendChild(errDiv);
         }
 
         btn.disabled = false;
