@@ -35,7 +35,7 @@ Rules:
 
 Special commands:
 - When user asks about Pump.fun reply with exactly this clickable link: <a href="https://pump.fun/" target="_blank" style="color:#9b6fff;">pump.fun</a>
-- When user clicks X or asks about Twitter or social media, reply with: Follow us on Twitter: <a href="https://x.com/" target="_blank" style="color:#9b6fff;">https://x.com/</a>
+- When user clicks X or asks about Twitter or social media, reply with: Follow us on Twitter: <a href="https://x.com/Pump_GPT" target="_blank" style="color:#9b6fff;">https://x.com/Pump_GPT</a>
 """
 
 def index(request):
@@ -70,6 +70,6 @@ def chat(request):
 
             print("XATO:", str(e))
 
-            return JsonResponse({"reply": f"Xatolik: {str(e)}", "status": "error"})
+            return JsonResponse({"reply": f"Error: {str(e)}", "status": "error"})
 
     return JsonResponse({"error": "Faqat POST"})
